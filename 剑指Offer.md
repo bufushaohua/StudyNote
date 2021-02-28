@@ -374,7 +374,7 @@ int countRange(const int *numbers, int length, int start, int end){
 >
 > ​	【二维数组在内存中占据连续的空间。在内存中从上到下存储各行元素，在同一行中按照从左到右的顺序存储】
 
-![image-20201220171438282](C:\Users\CYC\AppData\Roaming\Typora\typora-user-images\image-20201220171438282.png)
+![image-20201220171438282](D:\Files\Note\Typora\PNG\剑指Offer.assets\image-20201220171438282.png)
 
 如按上述数组查找数字7为例，首先选取数组中右上角的数字进行比较。若相等，则查找结束，若该数字大于要查找的数字，则去除该数所在的列；若该数字小于要查找的数字，则去除该数所在的行。重复上述操作，缩小查找的范围，直到找到要查找的数字，或者查找范围为空。
 
@@ -429,7 +429,7 @@ bool Find(int *matrix, int rows, int columns, int number){
 
 ​	当P1和P2指向同一位置时，表明所有空格都已经替换完毕。
 
-![image-20201222221305931](C:\Users\CYC\AppData\Roaming\Typora\typora-user-images\image-20201222221305931.png)
+![image-20201222221305931](D:\Files\Note\Typora\PNG\剑指Offer.assets\image-20201222221305931.png)
 
 ~~~java
 //代码实现
@@ -647,6 +647,8 @@ void SortAges(int ages[], int length){
 
 
 
+## 八、查找和排序
+
 ### 面试题11：旋转数组的最小数字
 
 > 题目：把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。输入一个递增排序的数组的一个旋转，输出旋转数组的最小元素。
@@ -671,7 +673,7 @@ void SortAges(int ages[], int length){
 
 ​	4.接下来在用更新后的两个指针重复做新一轮的查找。最终第一个指针将指向前面子数组的最后一个元素，而第二个指针会指向后面子数组的第一个元素。也就是它们最终会指向两个相邻的元素。而第二个指向的刚好是最小的元素。这就是循环结束的条件
 
-![img](file:///D:\Files\Tencent Files\3557251540\Image\C2C\985F4C12B2C5CA5EDCF0ACC0C34524DD.jpg)
+![img](D:\Files\Note\Typora\PNG\剑指Offer.assets\985F4C12B2C5CA5EDCF0ACC0C34524DD.jpg)
 
 ~~~java
 //代码如下
@@ -758,7 +760,7 @@ int MinInOrder(int* numbers, int index1, int index2){
 
 > 题目：请实现一个函数，输入一个整数，输出该数二进制表示中1的个数。例如：把9表示成二进制是1001，有2位是1.因此，如果输入9，则该函数输出2。
 
-**方法一：可能引起死循环的解法**
+==**方法一：可能引起死循环的解法**==
 
 ​	基本思路：1.先判断整数二进制最右边一位是不是1。2.把输入的整数右移一位，此时原来处于从右边数起的第二位被移到最右边，再判断是不是1。3.重复1的动作，直到整个整数变为0为止。
 
@@ -784,7 +786,7 @@ int NumberOf1(int n){
 
 ​	当把负数Ox80000000右移一位的时候，并不是简单地把最高位的1移到低二位变成Ox40000000，而是OxC0000000。这是因为移位前是一个负数，仍然要保证移位后是一个负数，因此移位后的最高位会设为1。如果一直做右移运算，那么最终这个数字就会变成OxFFFFFFF而陷入死循环。
 
-**方法二：常规解法**
+==**方法二：常规解法**==
 
 ​	为避免出现方法一中的死循环，这次我们不改变原整数二进制。
 
@@ -806,3 +808,921 @@ int NumberOf1(int n){
 ~~~
 
 ==提示：==这种解法循环的次数等于整数二进制的位数，32位的整数需要循环32次 
+
+==**方法三：Nice解法**==
+
+思想：
+
+​		1、从右到左消去（将“1”变为“0”）第一个出现“1”的位数：将该整数减去1，则该二进制最右边的“1”变为“0”，同时如果它的右边位数还有“0”，则所有的“0”都变成“1”【例：0100100 - 1 ——> 0100011】
+
+​		2、将步骤1中得到的结果与原整数做一次“与”操作，相当于把上一步中由“0”变为“1”的位数又重新变回来【例：0100011 & 0100100 ——> 0100000】，此时计数器自增1
+
+​		3、重复上述操作，直到整数变为“0”为止。
+
+~~~java
+//代码如下
+int NumberOf1(int n){
+    int count = 0;
+    while(n){
+        ++count;
+        n = (n-1) & n;
+    }
+    return count;
+}
+~~~
+
+
+
+## 十二、代码的完整性
+
+### 面试题19：正则表达式匹配
+
+~~~txt
+题目：请实现一个函数用来匹配包含“.”和“*”的正则表达式。模式中的字符“.”表示任意一个字符，而“*”表示它前面的字符可以出现任意次（含0次）。在本题中，匹配是字符串的所有字符匹配整个模式。例如，字符串“aaa”与模式“a.a”和“ab*ac*a”匹配，但与“aa.a”和“ab*a”均不匹配  
+~~~
+
+思路：
+
+​	1、如果模式中的字符ch是'.'，那么它可以匹配字符串中的任意字符。如果模式中的字符ch不是'.'，而且字符串中的也是ch，那么它们相互匹配，当字符串中的字符和模式中的字符相匹配时，接着匹配后面的字符
+
+​	2、当模式中的第二个字符不是'*'时，如果字符串中的第一个字符和模式中的第一个字符相匹配，那么字符串和模式都向后移动一个字符，然后在匹配剩下的字符串和模式。如果字符串中的第一个字符和模式中第一个字符不相匹配，则直接返回false。
+
+​	3、当模式中的第二个字符是‘*’时，问题要复杂一些。如果模式中的第一个字符和字符串中的第一个字符相匹配，则在字符串上向后移动一个字符。而在模式上有两种选择：可以在模式上向后移动两个字符，也可以保持模式不变。
+
+~~~java
+//代码如下
+bool match(char* str, char* pattern){
+    if(str == null || pattern == null){
+        return false;
+    }
+    return matchCore(str, pattern);
+}
+bool matchCore(char* str, char* pattern){
+    if(*str == '\0' && *pattern == '\0'){
+        return true;
+    }
+    if(*str != '\0' && *pattern == '\0'){
+        return false;
+    }
+    if(*(pattern + 1) == '*'){
+        if(*pattern == *str || (*pattern == '.' && *str != '\0')){
+            return matchCore(str +1, pattern +2) //move on the next state
+                || matchCore(str +1, pattern)   //stay on the current state
+                || mathCore(str, pattern +2);  //ignore a '*' 
+        }else{
+            return matchCore(str, pattern +2);  //ignore a '*'
+        }
+    }
+    if(*str == *pattern || (*pattern == '.' && *str != '\0')){
+        return matchCore(str + 1, pattern +1);
+    }
+    return false;
+}
+~~~
+
+
+
+### 面试题20：表示数值的字符串
+
+> ​		题目：请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串“+ 100”、“5e2”、“-123”、“3.1416”及'"-1E-16"都表示数值，但“12e”、“1a3.14”、“1.2.3”、“+-5”等等都不是
+
+==思路：==表示数值的字符串遵循模式`A[.[B]][e|EC]`或者`.B[e|EC]`，其中A为数值的整数部分，B紧跟着小数点为数值的小数部分，C紧跟着‘e’或者'E'为数值的指数部分。如果一个数没有整数部分，那么它的小数部分不能为空。
+
+~~~java
+//代码如下
+/*
+* 数字的格式可以用A[.[B]][e|EC]或者.B[e|EC]表示，其中A和C都是整数（可以有正负号，也可以没有），而B是一个无符号* 整数
+*/
+bool isNumeric(const cahr* str){
+    if(str == null){
+        return false;
+    }
+    bool numeric = scanInteger(&str);
+    //如果出现‘。’，则接下来是数字的小数部分
+    if(*str == '.'){
+        ++str;
+        /*
+        * 下面代码使用||的原因
+        * 1. 小数可以没有整数部分，如.123等于0.123
+        * 2. 小数点后面可以没有数字，如233等于233.0
+        * 3. 当然，小数点前面和后面可以都有数字，如233.334
+        */
+        numeric = scanUnsignedInteger(&str)||numeric;
+        // 如果出现‘e’或者‘E’，则接下来是数字的指数部分
+        if(*str == 'e' || *str =='E'){
+            ++str;
+            //下面代码用&&的原因
+            // 1.当e或E前面没有数字时，整个字符串不能表示数字，如.e1、e1
+            // 2.当e或E后面没有整数时，整个字符串不能表示数字，如12e、12e+5.4
+            numeric = numeric && scanInteger(&str);
+        }
+        return numeric && *str == ‘\0’;
+    }
+}
+
+//函数scanUnsignedInteger扫描字符串中0~9的数位（类似于一个无符号整数），用来匹配B部分
+bool scanUnsignedInteger(const char** str){
+    const char* before = *str;
+    while(**str != '\0' && **str >= '0' && *str <='9'){
+        ++(*str);
+    }
+    // 当str中存在若干0~9的数字时，返回true
+    return *str > before;
+}
+
+//该函数scanInteger扫描可能以表示正负的‘+’或者'-'为其实的0~9的数值（类似于一个可能带正负符号的整数），用来匹配前面数值模式中的A和C部分
+bool scanInteger(const char** str){
+    if(**str == '+' || **str == '-'){
+        ++(*str);
+    }
+    return scanUnsignedInteger(str);
+}
+~~~
+
+
+
+### 面试题21：调整数组顺序是奇函数位于偶数前面
+
+> ​		题目：输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分
+
+**方法一：最简单思路**
+
+​		思想：从头扫描这个数组，每碰到一个偶数，拿出这个数字，并把位于这个数字后面的所有数字往前移动一位。挪完之后在数组的末尾有一个空位，这时把该偶数放入这个空位。由于每碰到一个偶数就需要移动O(n)个数字，因此总的时间复杂度是O(n^2)。
+
+**方法二：双指针法**
+
+​		思想：一个从前往后移动，一个从后往前移动，前者始终位于后者之前。如果前者指向偶数并且后者指向奇数，则交换这两个数字。
+
+~~~java
+面试//代码如下
+void RecorderOddEven(int *pData,unsigned int length){
+    if(pData == null || length == 0){
+        return;
+    }
+    int *pBegin = pData;
+    int *pEnd = pData + length -1;
+    while(pBegin < pEnd){
+        //向后移动pBegin，直到它指向偶数
+        while(pBegin < pEnd && (*pBegin & 0x1) != 0){ //pBegin不为偶数
+            pBegin++;
+        }
+        //向前移动pEnd，直到它指向奇数
+        while(pBegin < pEnd && (*pEnd &0x1) == 0){  //pEnd不为奇数
+            pEnd--;
+        }
+        if(pBegin < pEnd){
+            int temp = *pBegin;
+            *pBegin = *pEnd;
+            *pEnd = temp;
+        }
+    }
+}
+~~~
+
+
+
+## 十三、代码的鲁棒性
+
+### 面试题22：链表中倒数第k个节点
+
+> ​		题目：输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头结点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的结点。
+
+~~~java
+//链表节点定义如下：
+struct ListNode{
+    int value;
+    ListNode *next;
+}
+~~~
+
+**方法一：简单思路**
+
+​		遍历链表两次，第一次统计出链表中节点的个数，第二次就能找到倒数第k个节点。
+
+**方法二：快慢指针**
+
+​		为了实现只遍历链表依次一次就找到倒数第k个节点，可以定义两个指针。第一个指针从链表的头指针开始遍历向前走k-1步，第二个指针保持不动；从第k步开始，第二个指针也开始从链表的头指针开始遍历。由于两个指针的距离保持在k-1，当第一个（走在前面的）指针到达链表的尾节点时，第二个（走在后面的）指针正好指向倒数第k个节点 。
+
+~~~java
+//代码如下
+ListNode* FindKthToTail(ListNode* pListHead, unsigned int k){
+    ListNode *pAhead = pListHead;
+    ListNode *pBehind = null;
+    for(unsigned int i = 0; i < k-1; ++i){
+        pAhead = pAhead -> next;
+    }
+    pBehind = pListHead;
+    while(pAhead->next != null){
+        pAhead = pAhead -> next;
+        pBehind = pBehind -> next;
+    }
+    return pBehind;
+}
+~~~
+
+==注意：==上述代码存在**鲁棒性问题**<!--所谓的鲁棒性是指程序能够判断输入是否合乎规范要求，并对不符合要求的输入予以合理的处理-->
+
+（1）输入的pListHead为空指针 （2）输入的以PListHead为头结点的链表的结点总数少于k （3）输入的参数k为0
+
+**问题解决方法：**
+
+~~~java
+//修改之后的代码
+ListNode* FindKthToTail(ListNode *pListHead, unsigned int k){
+    if(pListHead == null || k == 0){
+        return null;
+    }
+    ListNode *pAhead = pListHead;
+    ListNode *pBehind = null;
+    for(unsigned int i = 0; i < k-1; ++i){
+        if(pAhead->next != null){
+            pAhead = pAhead->next;
+        }else{
+            return null;
+        }
+    }
+    pBehind = pListHead;
+    while(pAhead -> next != null){
+        pAhead = pAhead -> next;
+        pBehind = pBehind -> next;
+    }
+    return pBehind;
+}
+~~~
+
+
+
+### 面试题23：链表中环的入口节点
+
+> ​	题目：如果一个链表中包含环，如何找到环的入口节点？
+
+**解决方法：**
+
+​		==第一步：确定一个链表中是否包含环【使用双指针来解决】：==定义两个指针，同时从链表的头结点出发，一个指针走的慢，每次走一步；一个指针走的快，每次走两步。如果走的快的指针追上了走得慢的指针，那么链表就包含环；如果走的快的指针走到了链表的末尾（next指向null）都没有追上第一个指针，那么链表就不包含环。
+
+​		==第二步：找到环的入口【使用双指针来解决】：==先定义两个指针P1和P2指向链表的头结点。如果链表中的环有n个节点，则指针P1先在链表上向前移动n步，然后两个指针以相同的速度向前移动。当第二个指针指向环的入口节点时，第一个指针已经围绕着环走了一圈，又回到了入口节点。
+
+​		==最后一步：得到环中节点的数目：==前面第一步用到了一快一慢两个指针，两个指针相遇的节点一定是在环中。可以从这个节点出发，一遍继续向前移动一边技术，当再次回到这个节点时，就可以得到环中节点数
+
+~~~java
+//代码如下
+//函数MeetingNode在链表中存在环的前提下找到一快一慢两个指针相遇的节点，如果链表中不存在环，则返回null
+ListNode* MeetingNode(ListNode *pHead){
+    if(pHead == null){
+        return null;
+    }
+    ListNode *pSlow = pHead -> next;
+    if(pSlow == null){
+        return null;
+    }
+    ListNode *PFast = pSlow->next;
+    while(pFast != null && pSlow != null){
+        if(pFast == pSlow){
+            return pFast;
+        }
+        //慢指针一次走一步
+        pSlow = pSlow -> next;
+        //快指针一次走两步
+        pFast = pFast->next;
+        if(pFast != null){
+            pFast = pFast -> next;
+        }
+    }
+    return null;
+}
+
+//函数EntryNodeOfLoopde得出环中的节点数目，并找到环的入口节点
+ListNode* EntryNodeOfLoop(ListNode *pHead){
+    ListNode *meetingNode = MeetingNode(pHead);
+    if(meetingNode == null){
+        return null;
+    }
+    //得到环中节点的数目
+    int nodesInLoop = 1;
+    ListNode *pNode1 = meetingNode;
+    while(pNode->next != meetingNode){
+        pNode1 =pNode1->next;
+        ++nodeInLoop;
+    }
+    //先移动pNode1，次数为环中节点的数目
+    pNode1 = pHead;
+    for(int i = 0; i < nodesInLoop; ++i){
+        pNode1 = pNode1 -> next;
+    }
+    //再移动pNode1和pNode2
+    ListNode* pNode2 = pHead;
+    while(pNode1 != pNode2){
+        pNode1 = pNode1 ->next;
+        pNode2 = pNode2 ->next;
+    }
+    return pNode1;
+}
+~~~
+
+
+
+### 面试题24：反转链表
+
+> ​		题目：定义一个函数，输入一个链表的头结点，反转该链表并输出反转后链表的头结点。
+
+~~~java
+//链表结点定义如下：
+struct ListNode {
+    int key;
+    ListNode *next;
+}
+~~~
+
+**问题思路分析：**我们需要定义三个指针，分别指向当前遍历到的节点，它的前一个节点及后一个节点。另外反转后链表的头结点，即原始链表的尾节点，自然是next为null的结点。
+
+~~~java
+//代码如下：
+ListNode* ReverseList(ListNode* pHead){
+    ListNode *pNode = pHead; //当前遍历的结点
+    ListNode *pReversedHead = null; //反转后链表的头结点
+    ListNode *pPrev = null; //当前遍历结点的前一节点
+    
+    while(pNode != null){
+        ListNode *pNext = pNode -> next;
+        if(pNext == null){
+            pReversedHead = pNode;
+        }
+        pNode->next = pPrev;
+        pPrev = pNode;
+        pNode = pNext;
+    }
+    return pReversedHead;
+}
+~~~
+
+
+
+### 面试题25：合并两个排序的链表
+
+> ​		题目：输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。
+
+~~~java
+//链表节点定义如下：
+struct ListNode{
+    int value;
+    ListNode *next;
+}
+~~~
+
+~~~java
+//代码如下：
+ListNode* Merge(ListNode *pHead1, ListNode *pHead2){
+    //鲁棒性
+    //当链表1为null，合并后的链表为链表2
+    if(pHead1 == null){
+        return pHead2;
+    }else if(pHead2 == null){  //当链表2为null，合并后的链表为链表1
+        return pHead1;
+    }
+    ListNode *pMergeHead = null;
+    if(pHead1 -> value < pHead2 -> value){
+        PMergedHead = pHead1;
+        pMergedHead->next = Merge(pHead1->next, pHead2); //递归
+    }else{
+        pMergedHead = pHead2;
+        pMergedHead->next = Merge(pHead1, pHead2->next); //递归
+    }
+    return pMergedHead;
+}
+~~~
+
+
+
+### 面试题26：树的子结构
+
+> ​		题目：输入两棵二叉树A和B，判断B是不是A的子结构。
+
+~~~java
+//二叉树结点的定义如下：
+struct BinaryTreeNode{
+    double value;
+    BinaryTreeNode *left;
+    BinaryTreeNode *right;
+}
+~~~
+
+**问题思路分析：**第一步，在树A中找到和树B的根节点的值一样的节点R；第二步，判断树A中以R为根节点的子树是不是包含和树B一样的结构
+
+~~~java
+//代码如下：
+//第一步在树A中查找与根节点的值一样的节点，可以用递归的方法或者用循环的方法去遍历
+bool HashSubtree(BinaryTreeNode *pRoot1, BinaryTreeNode *pRoot2){
+    bool result = false;
+    if(pRoot1 != null && pRoot2 != null){
+        if(Equal(pRoot1->value, pRoot2->value)){ //根节点匹配
+            result = DoesTree1HaveTree2(pRoot1, pRoot2);
+        }
+        if(!result){  //遍历左节点是否匹配
+            result = HashSubtree(pRoot1->left, pRoot2);
+        }
+        if(!result){ //遍历右节点是否匹配
+            result = HashSubtree(pRoot->pRight,pRoot2);
+        }
+    }
+    return result;
+}
+
+//第二步判断树A中以R为根节点的子树是不是和树B具有相同的结构，同样可以使用递归的思路来考虑
+bool DoesTree1HaveTree2(BinaryTreeNode *pRoot1, BinaryTreeNode *pRoot2){
+    //为了避免试图访问空指针而造成程序崩溃，同时也设置了递归调用的退出条件
+    if(pRoot2 == null){
+        return true;
+    }
+    if(pRoot1 == null){
+        return false;
+    }
+    //判断根节点是否相同
+    if(!Equal(pRoot1->value, pRoot2->value)){
+        return false;
+    }
+    //递归判断他们各自的左右结点的值是不是相同，终止条件是到达了树A或者树B的叶结点
+    return DoesTree1HaveTree2(pRoot1-> left, pRoot2->left)&&DoesTree1HaveTree2(pRoot1->right, pRoot2->right);
+}
+~~~
+
+==注意：==与二叉树相关的代码有大量的指针操作，在每次使用指针的时候，都应该思考这个指针是否可能是null，如果是，那么该如何处理。==另：==有一个细节值得我们注意：本节点的值的类型是double。在判断两个结点的值是否相等时，不能直接“==”判断，这是因为计算机内表示小数时（包括float和double型小数）都有误差。所以用Equal进行判断
+
+
+
+## 十四、画图让抽象问题形象化
+
+### 面试题27：二叉树的镜像
+
+> ​		题目：请完成一个函数，输入一棵二叉树，该函数输出它的镜像。
+
+~~~java
+//二叉树节点的定义如下：
+struct BinaryTreeNode{
+    int value;
+    BinaryTreeNode *left;
+    BinaryTreeNode *right;
+}
+~~~
+
+**问题解决思路：**递归遍历（前序、中序、后序都行）树的同时交换非叶节点的左、右子节点
+
+~~~java
+//代码如下：
+void MirrorRecursively(BinaryTreeNode *pNode){
+    if(pNode == null){
+        return ;
+    }
+    if(pNode->left == null && pNode->right == null){
+        return ;
+    }
+    //交换左、右子节点
+    BinaryTreeNode *pTemp = pNode->left;
+    pNode->left = pNode->right;
+    pNode->right = pTemp;
+    
+    if(pNode->left){
+        MirrorRecursively(pNode->left);
+    }
+    if(pNode->right){
+        MirrorRecursively(pNode->right);
+    }
+}
+~~~
+
+
+
+### 面试题28：对称的二叉树
+
+> ​		题目：请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
+
+![image-20210126221258628](D:\Files\Note\Typora\PNG\剑指Offer.assets\image-20210126221258628.png)
+
+==注意：==三种可能性：对称的二叉树；因结构而不对称的二叉树；结构对称但节点的值不对称的二叉树
+
+~~~java
+//代码如下：
+bool isSymmetrical(BinaryTreeNode *pRoot){
+    return isSymmetrical(pRoot, pRoot);
+}
+
+bool isSymmetrical(BinaryTreeNode *pRoot1, BinaryTreeNode *pRoot2){
+        if(pRoot1 == null && pRoot2 == null){
+            return true;
+        }
+        if(pRoot1 == null || pRoot2 == null){
+            return false;
+        }
+        if(pRoot1->value != pRoot2->value){
+            return false;
+        }
+        return isSymmetrical(pRoot1->left, pRoot2->right) && isSymmetrical(pRoot1->right, pRoot2->left);
+}
+~~~
+
+
+
+### 面试题29：顺时针打印矩阵
+
+> ​		题目：输入一个矩阵，按照从外向里以顺时针的顺序一次打印出每一个数字
+
+**问题解决思路：**
+
+1. 打印方式？可以用一个循环来打印矩阵，每次打印矩阵中的一个圈
+2. 打印继续条件？循环继续的条件是columns > startX * 2 并且 rows > startY * 2
+3. 如何打印？打印一圈分四步：第一步，从左到右打印一行；第二步，从上到下打印一列；第三步，从右到左打印一行；第四步，从下到上打印一列。
+
+==注意：==最后一圈有可能退化成只有一行、只有一列，甚至只有一个数字，因此打印这样的一圈就不再需要四步
+
+![image-20210126221454209](D:\Files\Note\Typora\PNG\剑指Offer.assets\image-20210126221454209.png)
+
+~~~java
+//代码如下：
+void PrintMatrixClockwisely(int **numbers, int columns, int rows){
+    if(numbers == null || colums <= 0 || rows <= 0){
+        return;
+    }
+    int start = 0;
+    while(colums > start * 2 && rows > start * 2){
+        PrintMatrixInCircle(numbers, columns, rows, start);
+        ++start;
+    }
+}
+//如何打印一圈的功能
+void PrintMatrixInCircle(int **numbers, int columns, int rows, int start){
+    int endX = columns - 1 - start;
+    int endY = rows -1 -start;
+    
+    //从左到右打印一行
+    for(int i = start; i<=endX; ++i){
+        int number = numbers[start][i];
+        printNumber(number);
+    }
+    
+    //从上到下打印一列
+    if(start < endY){
+        for(int i = start + 1; i <= endY; ++i){
+            int number = numbers[i][endY];
+            printNumber(number);
+        }
+    }
+    
+    //从右到左打印一行
+    if(start < endX && start < endY){
+        for(int i = endX - 1; i >= start; --i){
+            int number = numbers[endY][i];
+            printNumber(number);
+        }
+    }
+    
+    //从下到上打印一列
+    if(start <endX && start < endY -1){
+        for(int i = endY -1; i>= start + 1; --i){
+            int number = numbers[i][start];
+            printNumber(number);
+        }
+    }
+}
+~~~
+
+
+
+## 十五、举例让抽象问题具体化
+
+### 面试题30：包含min函数的栈
+
+> ​		题目：定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的min函数。在该栈中，调用min、push及pop的时间复杂度都是O(1)。 
+
+**问题解决思路：**
+
+1. 第一反应是每次压入一个新元素进栈时，将栈里的所有元素排序，让最小的元素位于栈顶，这样就能在O(1)时间内得到最小元素了【==缺点：==不能保证后进先出，此时这个数据结构就已经不是栈了】
+2. 在栈里添加一个成员变量存放最下的元素，每次压入新元素时，与当前最小元素比较，若小，则更新最小元素【==漏洞：==如果当前最小的元素被弹出栈了，那么如何得到下一个最小的元素呢？】
+
+优化：可以在压入最小元素之前，把次小元素保存起来。即把每次的最小元素（之前的最小元素和新压入栈的元素两者的较小者）都保存起来放到另外一个辅助栈里
+
+![image-20210130113509584](D:\Files\Note\Typora\PNG\剑指Offer.assets\image-20210130113509584.png)
+
+~~~java
+//代码如下
+template<typename T> void StackWithMin<T>:push(const T & value){
+    m_data.push(value);
+    if(m_min.size() == 0 || value < m_min.top()){
+        m_min.push(value);
+    }else{
+        m_min.push(m_min.top());
+    }
+}
+template<typename T> void StackWithMin<T>:pop(){
+    assert(m_data.size() > 0 && m_min.size() >0);
+    m_data.pop();
+    m_min.pop();
+}
+
+template<typename T> const T & StackWithMin<T>::min() const{
+    assert(m_data.size() > 0 && m_min.size() > 0);
+    return m_min.top();
+}
+~~~
+
+
+
+### 面试题31：栈的压入、弹出序列
+
+> ​	题目：输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。假设压入栈的所有数字均不相等。例如，序列{1,2,3,4,5}是某栈的压栈序列，序列{4,5,3,2,1}是该压栈序列对应的一个弹出序列，但{4,3,5,1,2}就不可能是该压栈序列的弹出序列。
+
+**问题解决思路：**建立一个辅助栈，把输入的第一个序列中的数字依次压入该辅助栈，并按照第二个序列的顺序依次从该栈中弹出数字。
+
+==总结：==【判断一个序列是不是栈的弹出序列的规律】如果下一个弹出的数字刚好是栈顶数字，那么直接弹出，如果下一个弹出的数字不在栈顶，则把压栈序列中还没有入栈的数字压入辅助栈，直到把下一个需要弹出的数字压入栈顶为止，如果所有数字都压完，还是没有找到下一个弹出的数字，那么该序列不可能是一个弹出序列。
+
+~~~java
+//代码如下：
+bool IsPopOrder(const int *pPush, const int * pPop, int nLength){
+    bool bPossible = false;
+    if(pPush != null && pPop != null && nLength > 0){
+        const int *pNextPush = pPush;
+        const int *pNextPop = pPop;
+        //新建一个数据栈
+        std:stack<int> stackData;
+        //遍历第二个序列
+        while(pNextPop - pPop < nLength){ 
+            //数据栈没数据，或者栈顶数据不是下一个要弹出的元素，遍历第一个序列
+            while(stackData.empty() || stackData.top() != *pNextPop){
+                if(pNextPush - pPush == nLength){
+                    break;
+                }
+                stackData.push(*pNextPush);
+                pNextPush++;
+            }
+            
+            if(stackData.top() != *pNextPop){
+                break;
+            }
+            stackData.pop();
+            pNextPop++;
+        }
+        if(stackData.empty() && pNextPop - pPop == nLength){
+            bPossible = true;
+        }
+    }
+    return bPossible;
+}
+~~~
+
+
+
+面试32：从上到下打印二叉树
+
+> ​	题目一：不分行从上到下打印二叉树【二叉树的层序遍历】
+>
+> ​	从上到下打印出二叉树的每个节点，同一层的结点按照从左到右的顺序打印。
+
+~~~java
+//二叉树节点的定义如下：
+struct BinaryTreeNode{
+    int value;
+    BinaryTreeNode *left;
+    BinaryTreeNode *right;
+}
+~~~
+
+==问题解决思路：==每次打印一个节点的时候，如果该节点有子节点，则把该节点的子节点放到一个队列的末尾，接下来取出队列头部最早进入队列的结点，重复前面的打印操作，直到队列中所有的节点都被打印出来。
+
+~~~java
+//代码如下：
+void PrintFromTopBottom(BinaryTreeNode *pTreeRoot){
+    if(!pTreeRoot){
+        return;
+    }
+    //新建一个队列
+    std:deque<BinaryTreeNode *>dequeTreeNode;
+    //将根节点放入队列中
+    dequeTreeNode.push_back(pTreeRoot);
+    while(dequeTreeNode.size()){
+        BinaryTreeNode *pNode = dequeTreeNode.front();
+        dequeTreeNode.pop_front(); //弹出最早进入队列节点
+        printf("%d", pNode->value);
+        if(pNode->left){ //判断该节点是否有左子节点，放入队列中
+            dequeTreeNode.push_back(pNode->left);
+        }
+        if(pNode->right){ //判断该节点是否有右子节点，放入队列中
+            dequeTreeNode.push_back(pNode->right);
+        }
+    }
+}
+~~~
+
+
+
+> ​	题目二：分行从上到下打印二叉树。
+>
+> ​	从上到下按层打印二叉树，同一层的节点按从左到右的顺序打印，每一层打印到一行。
+
+==问题解决思路：==与前一题类似，不同的是为了把二叉树的每一行单独打印到一行里，需要两个变量：一个变量表示在当前层中还没有打印的节点数；另一个变量表示下一层节点的数目。
+
+~~~java
+//代码如下：
+void Print(BinaryTreeNode *pRoot){
+    if(pRoot == null){
+        return;
+    }
+    std:queue<BinaryTreeNode *>nodes;
+    nodes.push(pRoot);
+    int nextLevel = 0;  //下一层的节点数目
+    int toBePrinted = 1;  //当层未打印的节点数
+    while(!nodes.empty()){
+        BinaryTreeNode *pNode = nodes.front();
+        printf("%d", pNode->value);
+        if(pNode->left != null){
+            nodes.push(pNode->left);
+            ++nextLevel;
+        }
+        if(pNode->right != null){
+            nodes.push(pNode->right);
+            ++nextLevel;
+        }
+        nodes.pop();
+        --toBePrinted;
+        //当层没有需要打印的节点，获取下一层打印的节点
+        if(toBePrinted == 0){
+            printf("\n");
+            toBePrinted = nextLevel;
+            nextLevel = 0;
+        }
+    }
+}
+~~~
+
+
+
+> ​	题目三：之字形打印二叉树
+>
+> ​	请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推
+
+==问题解决思路：==按之字形顺序打印二叉树需要两个栈。如果当前打印的是奇数层（第一层、第二层等），则先保存左子节点再保存右子节点到第一个栈里（实际上打印的时候就是从右到左打印）；如果当前打印的是偶数层（第二层、第四层等），则先保存右子节点再保存左子节点到第二个栈里。
+
+~~~java
+//代码如下：
+void Print(BinaryTreeNode *pRoot){
+    if(pRoot == null){
+        return;
+    }
+    std:stack<BinaryTreeNode *> levels[2];
+    int current = 0;
+    int next = 1;
+    levels[current].push(pRoot);
+    while(!levels[0].empty() || !levels[1].empty()){
+        BinaryTreeNode *pNode = levels[current].top();
+        levels[current].pop();
+        printf("%d", pNode->value);
+        
+        if(current == 0){
+            if(pNode->left != null){
+                levels[next].push(pNode->left);
+            }
+            if(pNode->right != null){
+                levels[next].push(pNode->right);
+            }
+        }
+        else{
+            if(pNode->right != null){
+                levels[next].push(pNode->right);
+            }
+            if(pNode->left != null){
+                levels[next].push(pNode->left);
+            }
+        }
+        //当前层数遍历完成，换方向
+        if(levels[current].empty()){
+            printf("\n");
+            current = 1- current;
+            next = 1- next;
+        }
+    }
+}
+~~~
+
+
+
+### 面试题33：二叉搜索树的后序遍历序列
+
+> ​	题目：输入一个整数数组，判断该数组是不是某**二叉搜索树**的后序遍历结果。如果是则返回true，否则返回false。假设输入的数组的任意两个数字都互不相同。【注：判断前序遍历同理】
+>
+> *二叉查找树（Binary Search Tree）*，（又：*二叉搜索树*，二叉排序树）它或者是一棵空树，或者是具有下列性质的*二叉树*： 若它的左子树不空，则左子树上所有结点的值均小于它的根结点的值； 若它的右子树不空，则右子树上所有结点的值均大于它的根结点的值；
+
+~~~java
+//代码如下：
+bool VerifySquenceOfBST(int sequence[], int length){
+    if(sequence == null || length <= 0){
+        return false;
+    }
+    int root = sequence[length -1];
+    //在二叉搜索树中左子树节点的值小于根节点的值
+    int i = 0;
+    for(; i<length -1; ++i){
+        if(sequence[i] > root){
+            break;
+        }
+    }
+    //在二叉搜索树中右子树节点的值大于根节点的值
+    int j = i;
+    for(; j <length -1; ++j){
+        if(sequence[j] < root){
+            return false;
+        }
+    }
+    //判断左子树是不是二叉搜索树
+    bool left = true;
+    if(i > 0){
+        left = VerifySquenceOfBST(sequence, i);
+    }
+    //判断右子树是不是二叉搜索树
+    bool right = true;
+    if(i < length -1){
+        right = VerifySquenceOfBST(sequence +i, length - i - 1);
+    }
+    return (left && right);
+}
+~~~
+
+
+
+### 面试题34：二叉树中和为某一值的路径
+
+> ​	题目：输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的根节点开始往下一直到叶结点所经过的结点形成一条路径。
+
+~~~java
+//二叉树节点的定义如下：
+struct BinaryTreeNode{
+    int value;
+    BinaryTreeNode *left;
+    BinaryTreeNode *right;
+}
+~~~
+
+==问题解决思路：==
+
+​		因为是从根节点到叶结点的路径，所以采用前序遍历最好，每访问到某一节点时，即把该节点添加到路径上，并累加该节点的值。
+
+​		如果该节点为叶结点，并且路径中节点值的和刚好等于输入的整数，则表示当前路径符合要求，随即打印出来。如果该节点不是叶结点，则继续访问它的子节点。
+
+​		当前节点访问结束后，递归函数将自动回到它的父节点。因此在函数退出之前要在路径上删除当前节点并减去当前节点的值，从而确保返回父节点时路径刚好是从根节点到父节点。
+
+​		保存路径的数据结构实际是一个栈，因为路径要与递归调用状态一致，而递归调用的本质实际上就是一个压栈和出栈的过程。
+
+~~~java
+//代码如下:
+void FindPath(BinaryTreeNode *pRoot, int expectedSum){
+    //代码鲁棒性的体现
+    if(pRoot == null){
+        return;
+    }
+    //用标准模板库中的vector实现了一个栈来保存路径
+    //没有直接用STL中的stack的原因是，在stack中只能得到栈顶元素，而我们打印路径的时候需要得到路径上所有的节点
+    std::vector<int> path; 
+    int currentSum = 0;//已走过路径的节点值之和
+    FindPath(pRoot, expectedSum, path, currentSum);
+}
+void FindPath(BinaryTreeNode *pRoot, int expectedSum, std::vector<int> &path, int currentSum){
+    currentSum += pRoot->value;
+    path.push_back(pRoot->value);
+    //如果是叶结点，并且路径上节点值的和等于输入的值,则打印出这条路径
+    bool isLeaf = pRoot->left = null && pRoot->right == null;
+    if(currentSum == expectedSum && isLeaf){
+        printf("A path is found：");
+        std::vector<int>::iterator iter = path.begin();
+        for(;iter != path.end(); ++iter){
+            printf("%d\t", *iter);
+        }
+        printf("\n");
+    }
+    //如果不是叶结点，则遍历它的子节点
+    if(pRoot->left != null){
+        FindPath(pRoot->left, expectedSum, path, currentSum);
+    }
+    if(pRoot->right != null){
+        FindPath(pRoot->right, expectedSum, path, currentSum);
+    }
+    //在返回父节点之前，在路径上删除当前节点
+    path.pop_back();
+}
+~~~
+
+
+
+## 十六、分解让复杂问题简单化
+
+### 面试题35：复杂链表的复制
+
+> ​	题目：请实现函数ComplexListNode* Clone(ComplexListNode *pHead)，复制一个复杂链表。在复杂链表中，每个节点除了有一个next指针指向下一个节点，还有一个Sibling指针指向链表中的任意节点或者null
+
+~~~C++
+//节点的C++定义如下：
+struct ComplexListNode{
+    int value;
+    ComplexListNode *next;
+    ComplexListNode *Sibling;
+}
+~~~
+
+==问题解决思路：==
+
+**方法一：**
